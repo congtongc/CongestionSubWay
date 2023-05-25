@@ -1,5 +1,7 @@
 package com.cookandroid.subway_congestion;
 
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,7 +16,16 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SearchFragment extends Fragment {
@@ -41,7 +52,7 @@ public class SearchFragment extends Fragment {
         list = new ArrayList<String>();
 
         // 검색에 사용할 데이터을 미리 저장한다.
-        settingList();
+        settingList(getActivity().getResources().getAssets());
 
         // 리스트의 모든 데이터를 arraylist에 복사한다.
         arraylist = new ArrayList<String>();
@@ -129,33 +140,40 @@ public class SearchFragment extends Fragment {
         adapter.notifyDataSetChanged();
     }
 
-    private void settingList() {
-        list.add("역1");
-        list.add("역2");
-        list.add("역3");
-        list.add("역4");
-        list.add("역5");
-        list.add("역6");
-        list.add("역7");
-        list.add("역8");
-        list.add("역9");
-        list.add("역10");
-        list.add("역11");
-        list.add("역12");
-        list.add("역13");
-        list.add("역14");
-        list.add("역15");
-        list.add("역16");
-        list.add("역17");
-        list.add("역18");
-        list.add("역19");
-        list.add("역20");
-        list.add("역21");
-        list.add("역22");
-        list.add("역23");
-        list.add("역24");
-        list.add("역25");
-        list.add("역26");
-        list.add("역27");
+    //Json 파일을 String으로 변형
+    private String getJsonString(AssetManager am) {
+        StringBuffer response = new StringBuffer();
+        try {
+            InputStream inputStream = am.open("second.json");
+            BufferedReader rd = new BufferedReader(new InputStreamReader(inputStream));
+            String line = null;
+            while ((line = rd.readLine()) != null) {
+                response.append(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return response.toString();
+    }
+
+
+    private void settingList(AssetManager am) {
+        jsonParsing(getJsonString(am));
+    }
+
+    //String으로 변형된 Json파일을 파싱하여, List에 역이름을 순서대로 저장한다.
+    private void jsonParsing(String json) {
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+
+            JSONArray movieArray = jsonObject.getJSONArray("DATA");
+
+            for (int i = 0; i < movieArray.length(); i++) {
+                JSONObject movieObject = movieArray.getJSONObject(i);
+                list.add(movieObject.getString("station_nm")); //역명인 "station_nm" id를 이용하여, 데이터를 가져온다.
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }
