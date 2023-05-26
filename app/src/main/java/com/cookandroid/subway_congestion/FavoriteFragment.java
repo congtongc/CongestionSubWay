@@ -65,8 +65,6 @@ public class FavoriteFragment extends Fragment {
                 } else {
                     // 한 번 클릭 시, 리스트에서 클릭한 항목의 위치 가져옴
                     String selectedStation = favoriteList.get(position);
-                    // 리스트의 역 명을 클릭 시 클릭한 역 명을 토스트 메시지
-                    Toast.makeText(getActivity(), selectedStation, Toast.LENGTH_SHORT).show();
                 }
                 lastClickTime = clickTime;    // 마지막 클릭 시간을 업데이트
             }
@@ -108,14 +106,13 @@ public class FavoriteFragment extends Fragment {
 
     // 즐겨찾기 추가 메소드
     public void addToFavorites(String station) {
-        // 데이터 추가
-        favoriteList.add(station);
-        favoriteAdapter.notifyDataSetChanged();
-
-        // 데이터 저장
-        saveFavoriteData();
-
-        // 즐겨찾기 추가 정보를 알림
-        Toast.makeText(getActivity(), station + "을(를) 즐겨찾기에 추가했습니다.", Toast.LENGTH_SHORT).show();
+        if (!favoriteList.contains(station)) {
+            favoriteList.add(station);  // 항목 추가
+            favoriteAdapter.notifyDataSetChanged(); // 어답터에게 변경 사항 알림
+            saveFavoriteData(); // 데이터 저장
+            Toast.makeText(getActivity(), station + "이(가) 즐겨찾기에 추가되었습니다.", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getActivity(), station + "은(는) 이미 즐겨찾기에 추가되어 있습니다.", Toast.LENGTH_SHORT).show();
+        }
     }
 }

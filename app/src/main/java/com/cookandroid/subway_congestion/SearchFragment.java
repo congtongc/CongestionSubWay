@@ -107,12 +107,9 @@ public class SearchFragment extends Fragment {
                     String selectedStation = list.get(position);    // 더블 클릭한 역 이름 담기
                     favoriteFragment.addToFavorites(selectedStation);
                 }
-                // 두 번 클릭 테스트 코드
-                Toast.makeText(getActivity(), list.get(position) + " 더블 클릭", Toast.LENGTH_SHORT).show();
             } else {
                 // 한 번 클릭 시
-                String selectedStation = list.get(position);
-                Toast.makeText(getActivity(), selectedStation, Toast.LENGTH_SHORT).show();
+                String selectedStation = list.get(position);    // 위치 값 가져옴
             }
             lastClickTime = clickTime;    // 마지막 클릭 시간을 업데이트
         });
