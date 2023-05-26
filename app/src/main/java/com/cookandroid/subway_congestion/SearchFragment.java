@@ -15,6 +15,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,22 +33,31 @@ import java.util.List;
 public class SearchFragment extends Fragment {
 
     private FavoriteFragment favoriteFragment;
-
-    public void setFavoriteFragment(FavoriteFragment fragment) {
-        favoriteFragment = fragment;
-    }
-
     private List<String> list;  // 데이터를 넣은 리스트변수
     private ListView stationListView;   // 검색을 보여줄 리스트변수
     private EditText searchEditText;    // 검색어를 입력할 Input창
     private SearchAdapter adapter;      // 리스트뷰에 연결할 아답터
     private ArrayList<String> arraylist;    // 데이터를 옮기기 위한 리스트
+    private long lastClickTime = 0; // 마지막 클릭 시간 변수 초기화
+    private static final long DOUBLE_CLICK_TIME_DELTA = 300;    // 두 번 클릭 간의 시간 간격(300밀리초)
+
+    private static final String FAVORITE_FRAGMENT_TAG = "favor";    // FavoriteFragment의 TAG 설정
+
+    // FavoriteFragment의 인스턴스를 생성하는 메서드
+    private FavoriteFragment getFavoriteFragment() {
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        return (FavoriteFragment) fragmentManager.findFragmentByTag(FAVORITE_FRAGMENT_TAG);
+    }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
         searchEditText = view.findViewById(R.id.searchEditText);
         stationListView = view.findViewById(R.id.stationListView);
+
+        // FavoriteFragment의 인스턴스 가져오기
+        favoriteFragment = getFavoriteFragment();
+
 
         // 리스트를 생성한다.
         list = new ArrayList<String>();
@@ -85,31 +96,25 @@ public class SearchFragment extends Fragment {
             }
         });
 
-        stationListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            private long lastClickTime = 0; // 마지막 클릭 시간 변수 초기화
-            private static final long DOUBLE_CLICK_TIME_DELTA = 300;    // 두 번 클릭 간의 시간 간격(300밀리초)
-
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View view, int position, long id) {
-                long clickTime = System.currentTimeMillis();  // 시스템의 현재 시간
-                // 이전 클릭 시간과 현재 클릭 시간을 비교하여 두 번 연속으로 클릭된 경우를 체크
-                if (clickTime - lastClickTime < DOUBLE_CLICK_TIME_DELTA) {
-                    // 두 번 연속 클릭 시
-                    String selectedStation = list.get(position);
-                    if (favoriteFragment != null) {
-                        favoriteFragment.addToFavorites(selectedStation);
-                    }
-                    // 두 번 터치 테스트 코드
-                    Toast.makeText(getActivity(), selectedStation + " 두 번 터치", Toast.LENGTH_SHORT).show();
-                } else {
-                    // 한 번 클릭 시, 리스트에서 클릭한 항목의 위치 가져옴
-                    String selectedStation = list.get(position);
-                    // 리스트의 역 명을 클릭 시 클릭한 역 명을 토스트 메시지
-                    Toast.makeText(getActivity(), selectedStation, Toast.LENGTH_SHORT).show();
+        stationListView.setOnItemClickListener((arg0, view1, position, id) -> {
+            long clickTime = System.currentTimeMillis();  // 시스템의 현재 시간
+            // 이전 클릭 시간과 현재 클릭 시간을 비교하여 두 번 연속으로 클릭된 경우를 체크
+            if (clickTime - lastClickTime < DOUBLE_CLICK_TIME_DELTA) {
+                // 해당 항목을 FavoriteFragment의 리스트뷰에 추가
+                FavoriteFragment favoriteFragment = getFavoriteFragment();
+                // 더블 클릭한 역을 즐겨찾기 프래그먼트 리스트에 추가
+                if (favoriteFragment != null) {
+                    String selectedStation = list.get(position);    // 더블 클릭한 역 이름 담기
+                    favoriteFragment.addToFavorites(selectedStation);
                 }
-                lastClickTime = clickTime;    // 마지막 클릭 시간을 업데이트
+                // 두 번 클릭 테스트 코드
+                Toast.makeText(getActivity(), list.get(position) + " 더블 클릭", Toast.LENGTH_SHORT).show();
+            } else {
+                // 한 번 클릭 시
+                String selectedStation = list.get(position);
+                Toast.makeText(getActivity(), selectedStation, Toast.LENGTH_SHORT).show();
             }
-
+            lastClickTime = clickTime;    // 마지막 클릭 시간을 업데이트
         });
         return view;
     }
@@ -166,11 +171,11 @@ public class SearchFragment extends Fragment {
         try {
             JSONObject jsonObject = new JSONObject(json);
 
-            JSONArray movieArray = jsonObject.getJSONArray("DATA");
+            JSONArray stationArray = jsonObject.getJSONArray("DATA");
 
-            for (int i = 0; i < movieArray.length(); i++) {
-                JSONObject movieObject = movieArray.getJSONObject(i);
-                list.add(movieObject.getString("station_nm")); //역명인 "station_nm" id를 이용하여, 데이터를 가져온다.
+            for (int i = 0; i < stationArray.length(); i++) {
+                JSONObject stationObject = stationArray.getJSONObject(i);
+                list.add(stationObject.getString("station_nm")); //역명인 "station_nm" id를 이용하여, 데이터를 가져온다.
             }
         } catch (JSONException e) {
             e.printStackTrace();

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
-    android:background="?android:attr/selectableItemBackground">
+    android:orientation="vertical">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="지하철역 검색창"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginBottom="10dp"
+        android:text="지하철역 검색창" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,19 +21,19 @@
             android:id="@+id/searchImg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxHeight="48dp"
-            android:maxWidth="48dp"
-            android:src="@drawable/search"
+            android:layout_marginTop="10dp"
             android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
+            android:maxWidth="48dp"
+            android:maxHeight="48dp"
             android:padding="0sp"
-            android:layout_marginTop="10dp"/>
+            android:scaleType="centerCrop"
+            android:src="@drawable/search" />
 
         <EditText
             android:id="@+id/searchEditText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="지하철역 검색"/>
+            android:hint="지하철역 검색" />
 
     </LinearLayout>
 
@@ -50,8 +50,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:clickable="true"
-            android:focusable="true"
-            />
+            android:focusable="true" />
 
     </LinearLayout>
 

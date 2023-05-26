@@ -4,9 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +26,7 @@ import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,10 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private FavoriteFragment favoriteFragment;
     private SearchFragment searchFragment;
     private SettingFragment settingFragment;
-    /*화면에 표시해주는 프래그먼트*/
-    private Fragment activeFragment;
     private Fragment selectedFragment;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,21 +49,25 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                if(selectedFragment!=null){
+                    getSupportFragmentManager().beginTransaction().hide(selectedFragment).commit();
+                }
                 switch (item.getItemId()) {
+
                     case R.id.favorite:
                         // 즐겨찾기 프래그먼트로 전환
                         switchFragment(favoriteFragment);
-                        return true;
+                        break;
                     case R.id.search:
                         // 검색 프래그먼트로 전환
                         switchFragment(searchFragment);
-                        return true;
+                        break;
                     case R.id.setting:
                         // 설정 프래그먼트로 전환
                         switchFragment(settingFragment);
-                        return true;
+                        break;
                 }
-                return false;
+                return true;
             }
         });
 
@@ -70,12 +76,17 @@ public class MainActivity extends AppCompatActivity {
         searchFragment = new SearchFragment();
         settingFragment = new SettingFragment();
 
+        // favoriteFragment를 액티비티에 추가
+        getSupportFragmentManager().beginTransaction().add(R.id.container, favoriteFragment,"favor").hide(favoriteFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.container, settingFragment,"setting").hide(settingFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.container, searchFragment,"search").commit();
         // 두 번째 탭(검색 탭)을 첫 번째로 지정
         bottomNavigationView.setSelectedItemId(R.id.search);
     }
 
     // 선택한 프래그먼트로 변경할 수 있는 메소드
     private void switchFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
+        selectedFragment = fragment;
+        getSupportFragmentManager().beginTransaction().show(fragment).commit();
     }
 }
