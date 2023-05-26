@@ -4,9 +4,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/settingButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="앱 종료" />
+    <ImageButton
+        android:id="@+id/CloseBtn"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@android:drawable/ic_lock_power_off"
+        android:background="#FF0000"
+        android:layout_gravity="right"/>
+
 </LinearLayout>
