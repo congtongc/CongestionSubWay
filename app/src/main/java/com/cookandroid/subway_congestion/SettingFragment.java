@@ -79,10 +79,10 @@ public class SettingFragment extends Fragment {
             Toast.makeText(getActivity(), "이미 선택된 테마입니다.", Toast.LENGTH_SHORT).show();
             return;
         }
-        AppCompatDelegate.setDefaultNightMode(themeMode);   // 원하는 테마 모드로 테마 설정
 
-        // 액티비티 재시작
-        restartActivity();
+        AppCompatDelegate.setDefaultNightMode(themeMode);   // 원하는 테마 모드로 테마 설정
+        restartActivity();  // 액티비티 재시작
+
     }
 
     // 재시작 매소드
